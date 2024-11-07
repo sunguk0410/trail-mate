@@ -2,14 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="8dp">
 
+    <!-- 위치 정보 표시 TextView -->
     <TextView
         android:id="@+id/locationTextView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:textSize="16sp"
         android:padding="4dp" />
+
+    <!-- 찜 여부 선택 CheckBox -->
+    <CheckBox
+        android:id="@+id/bookmarkCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:focusableInTouchMode="false" />
 
 </LinearLayout>

@@ -19,7 +19,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import java.util.List;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
@@ -30,8 +29,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private LocationListAdapter locationListAdapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMapsBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -40,16 +38,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // ViewModel 초기화
+        // ViewModel 초기화 및 RecyclerView 설정
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-
-        // RecyclerView 초기화
         RecyclerView recyclerView = binding.recyclerView;
         locationListAdapter = new LocationListAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(locationListAdapter);
 
-        // ViewModel의 locationList 관찰하여 데이터가 변경되면 RecyclerView 업데이트
+        // 체크박스 상태 변경 리스너 설정: 찜 리스트 업데이트
+        locationListAdapter.setOnBookmarkCheckedChangeListener(new LocationListAdapter.OnBookmarkCheckedChangeListener() {
+            @Override
+            public void onBookmarkCheckedChanged(String location, boolean isChecked) {
+                if (isChecked) {
+                    sharedViewModel.addBookmark(location); // 찜 리스트에 추가
+                }
+            }
+        });
+
+        // ViewModel의 locationList 관찰하여 데이터 업데이트
         sharedViewModel.getLocationList().observe(getViewLifecycleOwner(), new Observer<List<String>>() {
             @Override
             public void onChanged(List<String> locations) {
@@ -68,6 +74,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        // 서울 위치에 마커 추가 및 카메라 이동
         LatLng SEOUL = new LatLng(37.5665, 126.9780);
         MarkerOptions markerOptions = new MarkerOptions().position(SEOUL).title("서울");
         mMap.addMarker(markerOptions);

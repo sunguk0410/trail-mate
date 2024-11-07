@@ -3,6 +3,7 @@ package com.example.trail_mate;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,20 +14,38 @@ import java.util.List;
 
 public class LocationListAdapter extends RecyclerView.Adapter<LocationListAdapter.LocationViewHolder> {
 
-    // 위치 데이터를 저장하는 리스트
     private List<String> locationList = new ArrayList<>();
+    private OnBookmarkCheckedChangeListener onBookmarkCheckedChangeListener;
 
-    // ViewHolder 정의
+    // 인터페이스 정의: 체크박스 상태 변경 시 호출
+    public interface OnBookmarkCheckedChangeListener {
+        void onBookmarkCheckedChanged(String location, boolean isChecked);
+    }
+
+    public void setOnBookmarkCheckedChangeListener(OnBookmarkCheckedChangeListener listener) {
+        this.onBookmarkCheckedChangeListener = listener;
+    }
+
     static class LocationViewHolder extends RecyclerView.ViewHolder {
         private final TextView locationTextView;
+        private final CheckBox bookmarkCheckBox;
 
-        public LocationViewHolder(View itemView) {
+        public LocationViewHolder(View itemView, final OnBookmarkCheckedChangeListener listener) {
             super(itemView);
             locationTextView = itemView.findViewById(R.id.locationTextView);
+            bookmarkCheckBox = itemView.findViewById(R.id.bookmarkCheckBox);
+
+            // 체크박스 클릭 이벤트 처리
+            bookmarkCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (listener != null && getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    listener.onBookmarkCheckedChanged(locationTextView.getText().toString(), isChecked);
+                }
+            });
         }
 
-        public void bind(String location) {
+        public void bind(String location, boolean isChecked) {
             locationTextView.setText(location);
+            bookmarkCheckBox.setChecked(isChecked);
         }
     }
 
@@ -34,12 +53,12 @@ public class LocationListAdapter extends RecyclerView.Adapter<LocationListAdapte
     @Override
     public LocationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_location, parent, false);
-        return new LocationViewHolder(view);
+        return new LocationViewHolder(view, onBookmarkCheckedChangeListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull LocationViewHolder holder, int position) {
-        holder.bind(locationList.get(position));
+        holder.bind(locationList.get(position), false);
     }
 
     @Override
@@ -47,15 +66,8 @@ public class LocationListAdapter extends RecyclerView.Adapter<LocationListAdapte
         return locationList.size();
     }
 
-    // 위치 데이터를 설정하는 메서드
     public void setLocationList(List<String> locations) {
         locationList = locations;
         notifyDataSetChanged();
-    }
-
-    // 새로운 위치를 추가하는 메서드
-    public void addLocation(String location) {
-        locationList.add(location);
-        notifyItemInserted(locationList.size() - 1);
     }
 }

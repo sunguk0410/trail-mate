@@ -2,9 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- Google 지도 Fragment 추가 -->
+    <!-- Google 지도 Fragment -->
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -12,23 +13,11 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <LinearLayout
+    <!-- RecyclerView: 위치 리스트를 표시하는 영역 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="location" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scrollbars="vertical" />
-
-    </LinearLayout>
-
+        android:layout_height="200dp"
+        android:scrollbars="vertical" />
 
 </LinearLayout>
