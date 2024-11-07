@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "trail-mate"
 include(":app")
- 
+include(":viewmodeltest")

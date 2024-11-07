@@ -5,19 +5,19 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- 입력을 위한 EditText -->
+    <!-- EditText for user input -->
     <EditText
-        android:id="@+id/editTextFromFragment1"
+        android:id="@+id/editTextFromFragment2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter location" />
+        android:hint="Enter text here" />
 
-    <!-- 추가 버튼 -->
+    <!-- Button to update SharedViewModel data -->
     <Button
-        android:id="@+id/buttonFragment1"
+        android:id="@+id/buttonFragment2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Add to List" />
+        android:text="Update Text" />
 
 </LinearLayout>

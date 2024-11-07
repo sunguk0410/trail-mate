@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.trail_mate.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -24,9 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
         // 초기 화면 설정 (예: MapsFragment)
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(binding.mainContainer.getId(), new MapsFragment(), String.valueOf(R.id.fragment_maps))
-                    .commit();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(binding.mainContainer.getId(), new MapsFragment(), String.valueOf(R.id.fragment_maps));
+            fragmentTransaction.commit(); // 트랜잭션 커밋
         }
 
         // BottomNavigationView 리스너 설정
@@ -55,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
 
                 // 트랜잭션을 수행하여 Fragment를 교체
                 if (selectedFragment != null) {
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(binding.mainContainer.getId(), selectedFragment, String.valueOf(itemId)) // Tag를 설정하여 중복 방지
-                            .addToBackStack(null) // 뒤로 가기 버튼 지원
-                            .commitAllowingStateLoss(); // 상태 손실 허용
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(binding.mainContainer.getId(), selectedFragment, String.valueOf(itemId)); // Tag를 설정하여 중복 방지
+                    fragmentTransaction.addToBackStack(null); // 뒤로 가기 버튼 지원
+                    fragmentTransaction.commit(); // 상태 손실을 허용하지 않는 일반적인 commit 사용
                 }
                 return true;
             }

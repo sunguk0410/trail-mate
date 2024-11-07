@@ -1,84 +1,66 @@
 package com.example.trail_mate;
 
 import android.os.Bundle;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.trail_mate.databinding.FragmentMapsBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
+
+import java.util.List;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
-    private BottomSheetBehavior<View> bottomSheetBehavior;
+    private FragmentMapsBinding binding;
     private GoogleMap mMap;
-
-    public MapsFragment() {
-        // Required empty public constructor
-    }
+    private SharedViewModel sharedViewModel;
+    private LocationListAdapter locationListAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_maps, container, false);
+        binding = FragmentMapsBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // SupportMapFragment 초기화 및 getMapAsync로 콜백 설정
+        // ViewModel 초기화
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+        // RecyclerView 초기화
+        RecyclerView recyclerView = binding.recyclerView;
+        locationListAdapter = new LocationListAdapter();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(locationListAdapter);
+
+        // ViewModel의 locationList 관찰하여 데이터가 변경되면 RecyclerView 업데이트
+        sharedViewModel.getLocationList().observe(getViewLifecycleOwner(), new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> locations) {
+                locationListAdapter.setLocationList(locations);
+            }
+        });
+
+        // 지도 초기화
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
-        }
-
-        // BottomSheet 초기화
-        View bottomSheet = view.findViewById(R.id.bottomSheet);
-        if (bottomSheet != null) {
-            bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-
-            // 드래그 활성화
-            bottomSheetBehavior.setDraggable(true);
-
-            // 초기 상태 설정
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-            // BottomSheet 상태 변경 리스너 추가
-            bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-                @Override
-                public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                    if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                        Log.d("BottomSheet", "BottomSheet expanded");
-                    } else if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                        Log.d("BottomSheet", "BottomSheet collapsed");
-                    } else if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-                        Log.d("BottomSheet", "BottomSheet dragging");
-                    } else if (newState == BottomSheetBehavior.STATE_SETTLING) {
-                        Log.d("BottomSheet", "BottomSheet settling");
-                    } else if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                        Log.d("BottomSheet", "BottomSheet hidden");
-                    }
-                }
-
-                @Override
-                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                    // 드래그 또는 슬라이드 중일 때 호출됩니다. slideOffset은 0.0 (축소)에서 1.0 (완전히 확장) 사이입니다.
-                    Log.d("BottomSheet", "BottomSheet sliding: " + slideOffset);
-                }
-            });
         }
     }
 
@@ -86,14 +68,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // 지도에 서울 위치를 추가
         LatLng SEOUL = new LatLng(37.5665, 126.9780);
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(SEOUL);
-        markerOptions.title("서울");
-        markerOptions.snippet("한국의 수도");
-
+        MarkerOptions markerOptions = new MarkerOptions().position(SEOUL).title("서울");
         mMap.addMarker(markerOptions);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL, 10));
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null; // 메모리 누수 방지
     }
 }
