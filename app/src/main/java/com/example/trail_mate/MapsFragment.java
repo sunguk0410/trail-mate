@@ -1,6 +1,13 @@
 package com.example.trail_mate;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -8,9 +15,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.example.trail_mate.databinding.FragmentMapsBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,6 +23,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+
 import java.util.List;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
@@ -27,6 +33,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private SharedViewModel sharedViewModel;
     private LocationListAdapter locationListAdapter;
+    private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,7 +47,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         // ViewModel 초기화 및 RecyclerView 설정
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-        RecyclerView recyclerView = binding.recyclerView;
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerView); // RecyclerView를 직접 ID로 찾기
         locationListAdapter = new LocationListAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(locationListAdapter);
@@ -68,6 +75,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+        // BottomSheetBehavior 설정
+        LinearLayout bottomSheetLayout = view.findViewById(R.id.bottom_sheet_layout);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
+
+        // 버튼 클릭 이벤트 설정
+        Button expandButton = view.findViewById(R.id.expand_persistent_button);
+        expandButton.setOnClickListener(v -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
+
+        Button hideButton = view.findViewById(R.id.hide_persistent_button);
+        hideButton.setOnClickListener(v -> bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED));
     }
 
     @Override

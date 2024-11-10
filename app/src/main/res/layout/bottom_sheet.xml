@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet_layout"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    android:background="@drawable/background_bottom_sheet"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="60dp"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+    <!-- BottomSheet 확장 버튼 -->
+    <Button
+        android:id="@+id/expand_persistent_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="확장하기" />
+
+    <!-- BottomSheet 숨김 버튼 -->
+    <Button
+        android:id="@+id/hide_persistent_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="숨기기" />
+
+    <!-- RecyclerView: 위치 리스트를 표시하는 영역 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical" />
+
+</LinearLayout>
